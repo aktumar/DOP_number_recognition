@@ -2,4 +2,4 @@
 
 References: 
 
-(OpenCV KNN Character Recognition)[https://github.com/MicrocontrollersAndMore/OpenCV_3_KNN_Character_Recognition_Cpp]
+[OpenCV KNN Character Recognition](https://github.com/MicrocontrollersAndMore/OpenCV_3_KNN_Character_Recognition_Cpp)
