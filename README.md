@@ -9,3 +9,6 @@
 **References:** 
 
 [OpenCV KNN Character Recognition](https://github.com/MicrocontrollersAndMore/OpenCV_3_KNN_Character_Recognition_Cpp)
+
+[OpenCV Tutorials](https://docs.opencv.org/3.4.13/d9/df8/tutorial_root.html)
+
