@@ -1,1 +1,3 @@
-﻿  Number_recognition.vcxproj -> D:\Work\Outwork\Number_recognition\x64\Debug\Number_recognition.exe
+﻿  Test.cpp
+D:\Work\Outwork\Number_recognition\Number_recognition\Test.cpp(111,50): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+  Number_recognition.vcxproj -> D:\Work\Outwork\Number_recognition\x64\Debug\Number_recognition.exe
