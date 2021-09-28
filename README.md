@@ -6,6 +6,10 @@
 2. Open *Number_recognition* ᐅ *x64* ᐅ *Debug*
 3. Download [.dll](https://drive.google.com/file/d/15kXflTDls2TfJJlu5TwCEZGZPyhAKR2I/view?usp=sharing) and Put in *Debug* folder
 
+**Results:**
+
+<p align="center"><img width="50%" src="https://github.com/aktumar/Number_Recognition/blob/images/test.gif" /></p>
+
 **References:** 
 
 [OpenCV KNN Character Recognition](https://github.com/MicrocontrollersAndMore/OpenCV_3_KNN_Character_Recognition_Cpp)

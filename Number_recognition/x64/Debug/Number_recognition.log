@@ -1,3 +1,13 @@
-﻿  Test.cpp
-D:\Work\Outwork\Number_recognition\Number_recognition\Test.cpp(126,54): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+﻿  ImageProcessing.cpp
+D:\Work\Outwork\Number_recognition\Number_recognition\ImageProcessing.cpp(115,101): warning C4244: 'argument': conversion from 'double' to '_Tp', possible loss of data
+          with
+          [
+              _Tp=int
+          ]
+D:\Work\Outwork\Number_recognition\Number_recognition\ImageProcessing.cpp(115,96): warning C4244: 'argument': conversion from 'double' to '_Tp', possible loss of data
+          with
+          [
+              _Tp=int
+          ]
+D:\Work\Outwork\Number_recognition\Number_recognition\ImageProcessing.cpp(126,54): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
   Number_recognition.vcxproj -> D:\Work\Outwork\Number_recognition\x64\Debug\Number_recognition.exe

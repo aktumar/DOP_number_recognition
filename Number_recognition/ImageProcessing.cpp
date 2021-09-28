@@ -108,13 +108,13 @@ int main(int argc, char** argv)
         cv::imshow("imageBlurred", imageBlurred);
         cv::moveWindow("imageBlurred", 250, 500);
 
-        cv::adaptiveThreshold(imageBlurred, imageThresh, 255, cv::ADAPTIVE_THRESH_GAUSSIAN_C, cv::THRESH_BINARY_INV, 11, 5);
+        cv::adaptiveThreshold(imageBlurred, imageThresh, 255, cv::ADAPTIVE_THRESH_GAUSSIAN_C, cv::THRESH_BINARY_INV, 11, 2);
         cv::imshow("imageThresh", imageThresh);
         cv::moveWindow("imageThresh", 500, 500);
 
-        //cv::erode(imageThresh, imageEroded, cv::getStructuringElement(cv::MORPH_RECT, cv::Size(1, 1)));
-        //cv::imshow("imageEroded", imageEroded);
-        //cv::moveWindow("imageEroded", 1000, 500);
+        cv::erode(imageThresh, imageEroded, cv::getStructuringElement(cv::MORPH_RECT, cv::Size(2.5, 2.5)));
+        cv::imshow("imageEroded", imageEroded);
+        cv::moveWindow("imageEroded", 1000, 500);
 
         cv::findContours(imageEroded, contour, hierarchy, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
 
