@@ -8,7 +8,7 @@
 
 **Results:**
 
-<p align="center"><img width="50%" src="https://github.com/aktumar/Number_Recognition/blob/images/test.gif" /></p>
+<p align="center"><img width="50%" src="https://github.com/aktumar/Number_Recognition/blob/master/images/test.gif" /></p>
 
 **References:** 
 
