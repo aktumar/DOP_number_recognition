@@ -88,6 +88,7 @@ int main(int argc, char** argv)
         cv::Mat imageGrayscale;
         cv::Mat imageBlurred;
         cv::Mat imageThresh;
+        cv::Mat imageEroded;
 
         std::vector<std::vector<cv::Point> > contour;
         std::vector<cv::Vec4i> hierarchy;
@@ -100,16 +101,22 @@ int main(int argc, char** argv)
         imageOrigin = cv::imread(fn[k]);
 
         cv::cvtColor(imageOrigin, imageGrayscale, cv::COLOR_BGRA2GRAY);
-        //cv::imshow("imageGrayscale", imageGrayscale);
+        cv::imshow("imageGrayscale", imageGrayscale);
+        cv::moveWindow("imageGrayscale", 50, 500);
 
         cv::GaussianBlur(imageGrayscale, imageBlurred, cv::Size(5, 5), 0);
-        //cv::imshow("imageBlurred", imageBlurred);
+        cv::imshow("imageBlurred", imageBlurred);
+        cv::moveWindow("imageBlurred", 250, 500);
 
-        cv::adaptiveThreshold(imageBlurred, imageThresh, 255, cv::ADAPTIVE_THRESH_GAUSSIAN_C, cv::THRESH_BINARY_INV, 11, 2);
-        //cv::imshow("imageThresh", imageThresh);          
+        cv::adaptiveThreshold(imageBlurred, imageThresh, 255, cv::ADAPTIVE_THRESH_GAUSSIAN_C, cv::THRESH_BINARY_INV, 11, 5);
+        cv::imshow("imageThresh", imageThresh);
+        cv::moveWindow("imageThresh", 500, 500);
 
-        cv::findContours(imageThresh, contour, hierarchy, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
+        //cv::erode(imageThresh, imageEroded, cv::getStructuringElement(cv::MORPH_RECT, cv::Size(1, 1)));
+        //cv::imshow("imageEroded", imageEroded);
+        //cv::moveWindow("imageEroded", 1000, 500);
 
+        cv::findContours(imageEroded, contour, hierarchy, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
 
         for (int i = 0; i < contour.size(); i++)
         {
@@ -135,11 +142,13 @@ int main(int argc, char** argv)
             cv::Mat matCurrentChar(0, 0, CV_32F);
 
             cv::rectangle(imageOrigin, validContours[i].contourRect, cv::Scalar(150, 100, 0), 2);
-            oneImg = imageThresh(validContours[i].contourRect);
+            oneImg = imageEroded(validContours[i].contourRect);
 
             cv::resize(oneImg, oneImgResized, cv::Size(30, 40));
             cv::imshow("one number", oneImg);
+            cv::moveWindow("one number", 250, 250);
             cv::imshow(windowName, imageOrigin);
+            cv::moveWindow(windowName, 1050, 50);
 
             oneImgResized.convertTo(oneImgFloat, CV_32FC1);
             oneImgFlattenedFloat = oneImgFloat.reshape(1, 1);
