@@ -6,6 +6,8 @@
 #include<opencv2/imgproc/imgproc.hpp>
 #include<opencv2/ml/ml.hpp>
 
+#include <opencv2/opencv.hpp>
+
 const int MIN_CONTOUR_AREA = 70;
 
 class ContourWithData {
@@ -31,22 +33,14 @@ public:
     }
 };
 
-int main() {
-    std::vector<ContourWithData> allContours;  
-    std::vector<ContourWithData> validContours;                                                   
-
-    cv::Mat imageOrigin;
-    cv::Mat imageGrayscale;
-    cv::Mat imageBlurred;
-    cv::Mat imageThresh;
-
-    std::vector<std::vector<cv::Point> > contour;
-    std::vector<cv::Vec4i> hierarchy;
+int main(int argc, char** argv)
+{
+    cv::String path("images/*");
+    std::vector<cv::String> fn;
+    cv::glob(path, fn, true);
 
     cv::Mat matClassification;
     cv::Mat matImages;
-
-    std::string strFinalString;
 
     /*--------------------------------------------------------------------------*/
 
@@ -77,86 +71,89 @@ int main() {
     kNearest->train(matImages, cv::ml::ROW_SAMPLE, matClassification);
 
     /*--------------------------------------------------------------------------*/
-    
-    //imageOrigin = cv::imread("test.jpg");
-    //imageOrigin = cv::imread("test0.png");
-    imageOrigin = cv::imread("test1.png");
-    //imageOrigin = cv::imread("test2.png");
-    //imageOrigin = cv::imread("test3.jpg");
 
-    //cv::imshow("imageOrigin", imageOrigin);
-    if (imageOrigin.empty()) {
-        std::cout << "Image not found\n";
-        return(0);
+    std::cout << "Number of images:  " << fn.size() << std::endl;
+    if (fn.size() == 0) 
+    {
+        std::cout << "Could not find the image in path" << std::endl;
+        return 0;
     }
+  
+    for (int k = 0; k < fn.size(); k++)
+    {
+        std::vector<ContourWithData> allContours;
+        std::vector<ContourWithData> validContours;
 
-    cv::cvtColor(imageOrigin, imageGrayscale, cv::COLOR_BGRA2GRAY);
-    //cv::imshow("imageGrayscale", imageGrayscale);
-   
-    cv::GaussianBlur(imageGrayscale, imageBlurred, cv::Size(5, 5), 0);
-    //cv::imshow("imageBlurred", imageBlurred);
+        cv::Mat imageOrigin;
+        cv::Mat imageGrayscale;
+        cv::Mat imageBlurred;
+        cv::Mat imageThresh;
 
-    cv::adaptiveThreshold(imageBlurred, imageThresh, 255, cv::ADAPTIVE_THRESH_GAUSSIAN_C, cv::THRESH_BINARY_INV, 11, 2);
-    //cv::imshow("imageThresh", imageThresh);          
+        std::vector<std::vector<cv::Point> > contour;
+        std::vector<cv::Vec4i> hierarchy;
 
-    cv::findContours(imageThresh, contour, hierarchy, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
-    
-    /*--------------------------------------------------------------------------*/
+        std::string strFinalString;
 
-    for (int i = 0; i < contour.size(); i++) 
-    {           
-        ContourWithData contourWithData;                                        
-        contourWithData.contour = contour[i];                                   
-        contourWithData.contourRect = cv::boundingRect(contourWithData.contour);
-        contourWithData.fltArea = cv::contourArea(contourWithData.contour);     
-        allContours.push_back(contourWithData);                                 
-    }
+        cv::String windowName = fn[0];
+        cv::namedWindow(windowName);
 
-    for (int i = 0; i < allContours.size(); i++) 
-    {                
-        if (allContours[i].ifContourIsValid()) 
+        imageOrigin = cv::imread(fn[k]);
+
+        cv::cvtColor(imageOrigin, imageGrayscale, cv::COLOR_BGRA2GRAY);
+        //cv::imshow("imageGrayscale", imageGrayscale);
+
+        cv::GaussianBlur(imageGrayscale, imageBlurred, cv::Size(5, 5), 0);
+        //cv::imshow("imageBlurred", imageBlurred);
+
+        cv::adaptiveThreshold(imageBlurred, imageThresh, 255, cv::ADAPTIVE_THRESH_GAUSSIAN_C, cv::THRESH_BINARY_INV, 11, 2);
+        //cv::imshow("imageThresh", imageThresh);          
+
+        cv::findContours(imageThresh, contour, hierarchy, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
+
+
+        for (int i = 0; i < contour.size(); i++)
         {
-            validContours.push_back(allContours[i]);      
+            ContourWithData contourWithData;
+            contourWithData.contour = contour[i];
+            contourWithData.contourRect = cv::boundingRect(contourWithData.contour);
+            contourWithData.fltArea = cv::contourArea(contourWithData.contour);
+            allContours.push_back(contourWithData);
         }
+
+        for (int i = 0; i < allContours.size(); i++)
+            if (allContours[i].ifContourIsValid())
+                validContours.push_back(allContours[i]);
+
+        std::sort(validContours.begin(), validContours.end(), ContourWithData::sortByBoundingRectXPosition);
+
+        for (int i = 0; i < validContours.size(); i++)
+        {
+            cv::Mat oneImg;
+            cv::Mat oneImgResized;
+            cv::Mat oneImgFloat;
+            cv::Mat oneImgFlattenedFloat;
+            cv::Mat matCurrentChar(0, 0, CV_32F);
+
+            cv::rectangle(imageOrigin, validContours[i].contourRect, cv::Scalar(150, 100, 0), 2);
+            oneImg = imageThresh(validContours[i].contourRect);
+
+            cv::resize(oneImg, oneImgResized, cv::Size(30, 40));
+            cv::imshow("one number", oneImg);
+            cv::imshow(windowName, imageOrigin);
+
+            oneImgResized.convertTo(oneImgFloat, CV_32FC1);
+            oneImgFlattenedFloat = oneImgFloat.reshape(1, 1);
+
+            kNearest->findNearest(oneImgFlattenedFloat, 1, matCurrentChar);
+            float fltCurrentChar = (float)matCurrentChar.at<float>(0, 0);
+            strFinalString = strFinalString + char(int(fltCurrentChar));
+            cv::waitKey(0);
+        }
+        cv::destroyWindow(windowName);
+        std::cout << std::endl;
+        std::cout << "Result = " << strFinalString << std::endl;
     }
-
-    std::sort(validContours.begin(), validContours.end(), ContourWithData::sortByBoundingRectXPosition);
-
-    /*--------------------------------------------------------------------------*/
-
-    for (int i = 0; i < validContours.size(); i++) 
-    {   
-        cv::Mat oneImg;
-        cv::Mat oneImgResized;
-        cv::Mat oneImgFloat;
-        cv::Mat oneImgFlattenedFloat;
-        cv::Mat matCurrentChar(0, 0, CV_32F);
-
-        cv::rectangle(imageOrigin, validContours[i].contourRect, cv::Scalar(150, 100, 0), 2);                                          
-        oneImg = imageThresh(validContours[i].contourRect);
-        
-        cv::resize(oneImg, oneImgResized, cv::Size(30, 40));
-        cv::imshow("one number", oneImg);
-        cv::imshow("matTestingNumbers", imageOrigin);
-
-        oneImgResized.convertTo(oneImgFloat, CV_32FC1);
-        oneImgFlattenedFloat = oneImgFloat.reshape(1, 1);
-
-        kNearest->findNearest(oneImgFlattenedFloat, 1, matCurrentChar);
-        float fltCurrentChar = (float)matCurrentChar.at<float>(0, 0);
-        strFinalString = strFinalString + char(int(fltCurrentChar));
-
-        cv::waitKey(0);
-    }
-
-    /*--------------------------------------------------------------------------*/
-    std::cout << std::endl;
-    std::cout << "Result = " << strFinalString << std::endl;
-    std::cout << std::endl;
 
     cv::waitKey(0);                                    
-
     return(0);
 }
-
-
